@@ -1,6 +1,10 @@
 # What's this?
 
-See https://www.reddit.com/r/MTGLardFetcher/... essentially an inside Joke
+See [/r/MTGLardFetcher](https://www.reddit.com/r/MTGLardFetcher/), [/r/magicthecirclejerking](https://www.reddit.com/r/magicthecirclejerking/)... essentially an inside Joke Reddit Bot
+
+# Requirements
+
+Python 2.7+ and the awesome [PRAW module](https://praw.readthedocs.io/en/stable/)
 
 # How do I run it
 

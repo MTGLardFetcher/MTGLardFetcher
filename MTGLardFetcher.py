@@ -7,13 +7,15 @@ import time
 import random
 import sqlite3
 import os
+from tendo import singleton
 
 conn = sqlite3.connect('state.sqlite')
 cursor = conn.cursor()
+persistence = True
 
 def check_condition(c):
     text = c.body
-    matches = re.findall(r'\[\[(.*?)\]\]', text) 
+    matches = get_matches(text)
     comment_id =  c.id
     comment_author = str(c.author)
     cursor.execute('SELECT comment_id FROM replied WHERE comment_id=?', (c.id, ))
@@ -26,6 +28,11 @@ def check_condition(c):
         return matches
     else:
         return False
+
+def get_matches(text):
+    matches = re.findall(r'\[\[([^\[\]]*?)\]\]', text)
+    #matches = re.findall(r'\[\[(.*?)\]\]', text)
+    return matches
 
 def get_links(r):
     subreddit = r.get_subreddit('MTGLardFetcher')
@@ -69,13 +76,17 @@ def bot_action(c, matches, links, respond=False):
 
 if __name__ == '__main__':
 
+    me = singleton.SingleInstance()
+
     cursor.execute('''CREATE TABLE IF NOT EXISTS replied (comment_id text)''')
     conn.commit()
 
     UA = 'MTGLardFetcher, a MTGCardFetcher Parody bot for /r/magicthecirclejerking. Kindly direct complaints to /u/0x2a'
     r = praw.Reddit(UA)
 
-    r.set_oauth_app_info(client_id=os.getenv('CLIENT_ID'), client_secret=os.getenv('CLIENT_SECRET'), redirect_uri='http://127.0.0.1:666/authorize_callback') 
+    r.set_oauth_app_info(client_id=os.getenv('CLIENT_ID'), 
+            client_secret=os.getenv('CLIENT_SECRET'), 
+            redirect_uri='http://127.0.0.1:666/authorize_callback') 
     r.refresh_access_information(os.getenv('REFRESH_TOKEN'))
 
     # get initial auth and refresh token, then paste the refresh token into refresh_access_information() 

@@ -8,6 +8,11 @@ import random
 import sqlite3
 import os
 from tendo import singleton
+import sys
+
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 conn = sqlite3.connect('state.sqlite')
 cursor = conn.cursor()
@@ -36,10 +41,15 @@ def get_matches(text):
 
 def get_links(r):
     subreddit = r.get_subreddit('MTGLardFetcher')
-    candidates = []
-    for post in subreddit.get_hot(limit=15):
+    candidates = ['http://i.imgur.com/66Knlyo.png'] # pot of greed is always an option
+    for post in subreddit.get_hot(limit=50):
         if not "/r/MTGLardFetcher" in post.url:
-            candidates.append(post.url)
+            # allow only serious domains 
+            if re.search('(i.redd.it|i.imgur.com)', post.url):
+                candidates.append(post.url)
+                print "cool domain approved by MARO", post.url
+            else:
+                print "shitty domain excluded by speculators", post.url
 
     print "refreshed candidate list:"
     for c in candidates:
@@ -53,7 +63,7 @@ def bot_action(c, matches, links, respond=False):
     text = "^(Probably totally what you linked)\n\n"
 
     for m in matches:
-        print m
+        #print m
         link = random.choice(links)
         text += " * [" +m+ "]("+ link + ")\n"
 
@@ -66,12 +76,18 @@ def bot_action(c, matches, links, respond=False):
             ^^^you ^^^can ^^^rage ^^^at ^^^this ^^^bot ^^^instead ^^^at
             ^^^/r/MTGLardFetcher ^^^or ^^^even ^^^submit ^^^some ^^^of 
             ^^^the ^^^sweet ^^^Siege ^^^Rhino ^^^alters ^^^your ^^^GF ^^^made\n"""
-    print text
+    #print text
 
     if respond:
-        c.reply(text)
-        cursor.execute('insert into replied (comment_id) values (?)', (c.id, ))
-        conn.commit()
+        try:
+            c.reply(text)
+            #cursor.execute('insert into replied (comment_id) values (?)', (c.id, ))
+            #conn.commit()
+        except praw.errors.APIException:
+            print "TOO_OLD or some other crap, going on"
+        finally: 
+            cursor.execute('insert into replied (comment_id) values (?)', (c.id, ))
+            conn.commit()
 
 
 if __name__ == '__main__':
@@ -100,6 +116,7 @@ if __name__ == '__main__':
     links = get_links(r)
 
 
+    #for c in praw.helpers.comment_stream(r, 'magicthecirclejerking'):
     for c in praw.helpers.comment_stream(r, 'magicthecirclejerking'):
         matches = check_condition(c)
         if matches:    

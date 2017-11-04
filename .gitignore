@@ -66,3 +66,4 @@ bot.log
 bot.sh
 state.sqlite
 build
+.python-version

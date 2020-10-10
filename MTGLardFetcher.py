@@ -10,10 +10,11 @@ import os
 from tendo import singleton
 import sys
 import pprint
+import importlib
 
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+importlib.reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 conn = sqlite3.connect('state.sqlite')
 cursor = conn.cursor()
@@ -39,10 +40,10 @@ def check_condition(c, r):
         c.author != 'MTGLardFetcher' and 
         c.link_title != holytopic):
 
-        print "replying to unanswered comment " + comment_id
+        print("replying to unanswered comment " + comment_id)
         return matches
     else:
-        print "ignoring answered/uneligible comment " + comment_id
+        print("ignoring answered/uneligible comment " + comment_id)
         return False
 
 def get_matches(text):
@@ -54,18 +55,19 @@ def get_links(r):
     #subreddit = r.get_subreddit('MTGLardFetcher')
     subreddit = r.subreddit('MTGLardFetcher')
     candidates = ['http://i.imgur.com/66Knlyo.png'] # pot of greed is always an option
+    #candidates = ['https://i.redd.it/4f1qxxl3dqc21.png'] # bleep bleep
     for post in subreddit.hot(limit=50):
         if not "/r/MTGLardFetcher" in post.url:
             # allow only serious domains 
             if re.search('(i.redd.it|i.imgur.com)', post.url):
                 candidates.append(post.url)
-                print "cool domain approved by MARO", post.url
+                print("cool domain approved by MARO", post.url)
             else:
-                print "shitty domain excluded by speculators", post.url
+                print("shitty domain excluded by speculators", post.url)
 
-    print "refreshed candidate list:"
+    print("refreshed candidate list:")
     for c in candidates:
-        print c
+        print(c)
 
     return candidates        
         
@@ -94,7 +96,7 @@ def bot_action(c, matches, links, respond=False):
         try:
             c.reply(text)
         except praw.errors.APIException:
-            print "TOO_OLD or some other crap, going on"
+            print("TOO_OLD or some other crap, going on")
         finally: 
             cursor.execute('insert into replied (comment_id) values (?)', (c.id, ))
             conn.commit()

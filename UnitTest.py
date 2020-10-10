@@ -29,7 +29,7 @@ class UnitTest(unittest.TestCase):
     def test_match3(self):
         d = PrawMock('[[x]] some text [[[[[[[[[y]]')
         v = MTGLardFetcher.get_matches(d.body) 
-        print v
+        print(v)
         self.assertEqual(v[1], 'y')
 
 if __name__ == '__main__':

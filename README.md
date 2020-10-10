@@ -4,7 +4,7 @@ See [/r/MTGLardFetcher](https://www.reddit.com/r/MTGLardFetcher/), [/r/magicthec
 
 # Requirements
 
-Python 2.7+ and the awesome [PRAW module](https://praw.readthedocs.io/en/stable/)
+Python 3 and the awesome [PRAW module](https://praw.readthedocs.io/en/stable/)
 
 # How do I run it
 

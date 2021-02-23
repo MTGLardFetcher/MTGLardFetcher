@@ -29,10 +29,12 @@ def check_condition(c, r):
     comment_author = str(c.author)
     cursor.execute('SELECT comment_id FROM replied WHERE comment_id=?', (c.id, ))
     already_replied = cursor.fetchone()
-    holytopic = 'Weekly Off-Topic Thread' 
+    holytopic = 'Weekly /unjerk Thread' 
 
     #print "checking comment in thread " + pp.pformat(vars(c)) + " -- " + comment_id + " matches " + str(matches) + " replied " + str(already_replied)
     #print "checking comment in thread -" + c.link_title + "-:" + holytopic +  ": -- " + comment_id + " matches " + str(matches) + " replied " + str(already_replied)
+
+    print(f"{comment_id} {comment_author} {already_replied} {matches}")
 
     # don't reply twice and never reply to own comment to prevent possible loops
     if (matches and 
